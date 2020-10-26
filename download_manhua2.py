@@ -156,7 +156,7 @@ if __name__ == '__main__':
     # manhua.catalog_url = 'https://m.duoduomh.com/manhua/xuanfengguanjia'
     manhua.catalog_url = 'https://m.zuimh.com/manhua/zhoushuhuizhan'
 
-    manhua.base_dir = 'D:\图片\旋风管家'
+    manhua.base_dir = 'D:\图片\咒术回战'
     pprint(manhua._info)
 
     # manhua.download()
