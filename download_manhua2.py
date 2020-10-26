@@ -6,8 +6,9 @@ import re
 import os
 import download_rule
 
+
 class DownloadManhua():
-    def __init__(self, rule:download_rule.DuoDuoManHua):
+    def __init__(self, rule: download_rule.DuoDuoManHua):
         self._base_dir = None
 
         self._rule = rule
@@ -30,8 +31,8 @@ class DownloadManhua():
         resp_data = resp.data.decode('utf-8')
 
         self.get_catalog_info(resp_data)
-    
-    base_dir    = property(fset=base_dir)
+
+    base_dir = property(fset=base_dir)
     catalog_url = property(fset=catalog_url)
 
     def get_base_message(self, url):
@@ -46,12 +47,12 @@ class DownloadManhua():
         resp_data = resp.data.decode('utf-8')
 
         info = {}
-        info ['title']            = self.get_title(resp_data)
+        info['title'] = self.get_title(resp_data)
         info['chapter_image_url'] = self.get_chapter_path(resp_data)
-        info['next_chapter_url']  = self.get_next_chapter_url(resp_data)
+        info['next_chapter_url'] = self.get_next_chapter_url(resp_data)
         return info
-        
-    def get_title(self, resp_data:str):
+
+    def get_title(self, resp_data: str):
         title = re.search(self._rule.SEARCH_TITLE, resp_data)
         if not title:
             print("can't found title, Exit...")
@@ -59,23 +60,25 @@ class DownloadManhua():
 
         title = title.group(1)
         idx = len(title)
-        i = title.find(self._rule.FIND_TITLE) 
+        i = title.find(self._rule.FIND_TITLE)
         if i:
             idx = i
 
         return title[0:idx]
 
-    def get_chapter_path(self, resp_data:str):
-        search_image_res = re.search(self._rule.SEARCH_IMAGE_RES, resp_data, re.M|re.I)
-        search_image_path = re.search(self._rule.SEARCH_IMAGE_PATH, resp_data, re.M|re.I)
+    def get_chapter_path(self, resp_data: str):
+        search_image_res = re.search(
+            self._rule.SEARCH_IMAGE_RES, resp_data, re.M | re.I)
+        search_image_path = re.search(
+            self._rule.SEARCH_IMAGE_PATH, resp_data, re.M | re.I)
 
         if not search_image_res or not search_image_path:
             print("can't found image path or image res, Exit...")
             exit()
 
-        image_res:str = search_image_res.group(1)
-        path:str = search_image_path.group(1)
-        image_path_list:list = path[2:-1].split(",")
+        image_res: str = search_image_res.group(1)
+        path: str = search_image_path.group(1)
+        image_path_list: list = path[2:-1].split(",")
 
         index = 0
         for e in image_path_list:
@@ -85,10 +88,10 @@ class DownloadManhua():
             index += 1
 
         return image_path_list
-        
 
-    def get_next_chapter_url(self, resp_data:str):
-        search_next_chapter_url = re.search(self._rule.SEARCH_NEXT_URL, resp_data, re.M|re.I)
+    def get_next_chapter_url(self, resp_data: str):
+        search_next_chapter_url = re.search(
+            self._rule.SEARCH_NEXT_URL, resp_data, re.M | re.I)
 
         if not search_next_chapter_url:
             print("can't found next chapter url, Exit...")
@@ -96,7 +99,7 @@ class DownloadManhua():
 
         return search_next_chapter_url.group(1).replace('\\', '')
 
-    def get_catalog_info(self, resp_data:str):
+    def get_catalog_info(self, resp_data: str):
         search = re.search(self._rule.SEARCH_CATALOG, resp_data, re.DOTALL)
         if not search:
             print("Can't search any <chapter-warp> tag, Exit...")
@@ -110,21 +113,23 @@ class DownloadManhua():
         idx = 1
         for t in titles:
             li = re.search(self._rule.SEARCH_HERF_AND_TITLE, t, re.DOTALL)
-            if self._catalog_url not in li.group(1): continue
-            info.append({'index': str(idx).zfill(3), 'title': li.group(2), 'url': li.group(1)})
+            if self._catalog_url not in li.group(1):
+                continue
+            info.append({'index': str(idx).zfill(
+                3), 'title': li.group(2), 'url': li.group(1)})
             idx += 1
 
         self._catalog_info = info
-        return 
+        return
 
     def download(self):
         for info in self._catalog_info:
             chapter_info = self.get_base_message(info['url'])
             self.download_chapter_images(info, chapter_info)
 
-
-    def download_chapter_images(self, info:dict, chapter_info:dict):
-        chapter_dir = os.path.join(self._base_dir, info['index'] + "_" + info['title'])
+    def download_chapter_images(self, info: dict, chapter_info: dict):
+        chapter_dir = os.path.join(
+            self._base_dir, info['index'] + "_" + info['title'])
         if not os.path.exists(chapter_dir):
             os.mkdir(chapter_dir)
 
@@ -144,12 +149,14 @@ class DownloadManhua():
             with open(full_file_path, 'wb+') as f:
                 f.write(resp.data)
                 print('Success Download - ', file_name)
-    
+
 
 if __name__ == '__main__':
     manhua = DownloadManhua(download_rule.DuoDuoManHua)
-    manhua.catalog_url = 'https://m.duoduomh.com/manhua/xuanfengguanjia'
-    manhua.base_dir = 'D:\图片\旋风管家'
-    # pprint(manhua._info)
+    # manhua.catalog_url = 'https://m.duoduomh.com/manhua/xuanfengguanjia'
+    manhua.catalog_url = 'https://m.zuimh.com/manhua/zhoushuhuizhan'
 
-    manhua.download()
+    manhua.base_dir = 'D:\图片\旋风管家'
+    pprint(manhua._info)
+
+    # manhua.download()
