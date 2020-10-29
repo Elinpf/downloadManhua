@@ -128,6 +128,7 @@ class DownloadManhua():
 
         res = duoduo_get_image_url(res)
         print(res)
+        return res
 
 
 if __name__ == '__main__':
