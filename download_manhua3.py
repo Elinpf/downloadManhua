@@ -151,7 +151,7 @@ if __name__ == '__main__':
             cata_dict['image_urls'][i] = image_url
             # print(image_url)
 
-    json_str = json.dump(manhua._catalog_info, indent=4)
+    json_str = json.dumps(manhua._catalog_info, indent=4)
     with open('manhua_download.json', 'w') as json_file:
         json_file.write(json_str)
 
